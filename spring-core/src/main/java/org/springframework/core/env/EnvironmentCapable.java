@@ -37,11 +37,15 @@ package org.springframework.core.env;
  * @see Environment
  * @see ConfigurableEnvironment
  * @see org.springframework.context.ConfigurableApplicationContext#getEnvironment()
+ *
+ * 返回当前容器的坏境属性
+ *
  */
 public interface EnvironmentCapable {
 
 	/**
 	 * Return the {@link Environment} associated with this component.
+	 *  返回当前容器的坏境属性
 	 */
 	Environment getEnvironment();
 

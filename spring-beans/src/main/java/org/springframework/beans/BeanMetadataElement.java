@@ -24,6 +24,9 @@ import org.springframework.lang.Nullable;
  *
  * @author Juergen Hoeller
  * @since 2.0
+ *
+ * 提供对类的元信息 也就是.class文件路径
+ *
  */
 public interface BeanMetadataElement {
 

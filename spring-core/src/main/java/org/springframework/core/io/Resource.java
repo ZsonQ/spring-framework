@@ -48,6 +48,15 @@ import org.springframework.lang.Nullable;
  * @see ClassPathResource
  * @see ByteArrayResource
  * @see InputStreamResource
+ *
+ *
+ * 文件描述符接口
+ *
+ * 底层资源的类型，例如文件或类路径资源。
+ * InputStream可以打开每个资源，如果它存在
+ * 物理形式，但URL或文件句柄可以被返回
+ * 某些资源。实际的行为是特定于实现的。
+ *
  */
 public interface Resource extends InputStreamSource {
 

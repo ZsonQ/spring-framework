@@ -24,6 +24,10 @@ import org.springframework.lang.Nullable;
  *
  * @author Rob Harrop
  * @since 2.0
+ *
+ * 提供对BeanDefinition属性操作的API
+ * 是BeanDefinition的父接口
+ *
  */
 public interface AttributeAccessor {
 
@@ -35,6 +39,10 @@ public interface AttributeAccessor {
 	 * class or package names as prefix.
 	 * @param name the unique attribute key
 	 * @param value the attribute value to be attached
+	 *
+	 * 设置BeanDefinition元数据
+	 *
+	 *
 	 */
 	void setAttribute(String name, @Nullable Object value);
 
@@ -43,6 +51,8 @@ public interface AttributeAccessor {
 	 * Return {@code null} if the attribute doesn't exist.
 	 * @param name the unique attribute key
 	 * @return the current value of the attribute, if any
+	 *
+	 * 获取BeanDefinition元数据
 	 */
 	@Nullable
 	Object getAttribute(String name);
@@ -52,6 +62,9 @@ public interface AttributeAccessor {
 	 * Return {@code null} if no attribute under {@code name} is found.
 	 * @param name the unique attribute key
 	 * @return the last value of the attribute, if any
+	 *
+	 * 删除BeanDefinition元数据
+	 *
 	 */
 	@Nullable
 	Object removeAttribute(String name);
@@ -60,11 +73,15 @@ public interface AttributeAccessor {
 	 * Return {@code true} if the attribute identified by {@code name} exists.
 	 * Otherwise return {@code false}.
 	 * @param name the unique attribute key
+	 *
+	 * 返回是否存在BeanDefinition元数据
 	 */
 	boolean hasAttribute(String name);
 
 	/**
 	 * Return the names of all attributes.
+	 *
+	 * 返回BeanDefinition元数据数组
 	 */
 	String[] attributeNames();
 

@@ -42,6 +42,11 @@ import org.springframework.util.ObjectUtils;
  * @author Juergen Hoeller
  * @see GenericBeanDefinition
  * @see RootBeanDefinition
+ *
+ * ChildBeanDefinition的作用：
+ * 		1.只能作为子db
+ * 		2.构造方法必须指定一个参数parent(不能直接作为单独的db，需要和父db一起使用)
+ *
  */
 @SuppressWarnings("serial")
 public class ChildBeanDefinition extends AbstractBeanDefinition {
@@ -58,6 +63,10 @@ public class ChildBeanDefinition extends AbstractBeanDefinition {
 	 * @see #setScope
 	 * @see #setConstructorArgumentValues
 	 * @see #setPropertyValues
+	 *
+	 * 必须传一个parent 父db
+	 * 所以能作为单独的一个db出现和作为父db出现
+	 *
 	 */
 	public ChildBeanDefinition(String parentName) {
 		super();

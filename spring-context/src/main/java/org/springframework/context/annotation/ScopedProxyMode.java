@@ -32,6 +32,8 @@ public enum ScopedProxyMode {
 	/**
 	 * Default typically equals {@link #NO}, unless a different default
 	 * has been configured at the component-scan instruction level.
+	 *
+	 * 默认值就是NO 不代理
 	 */
 	DEFAULT,
 
@@ -41,17 +43,25 @@ public enum ScopedProxyMode {
 	 * non-singleton scoped instance, which should favor the use of the
 	 * {@link #INTERFACES} or {@link #TARGET_CLASS} proxy-modes instead if it
 	 * is to be used as a dependency.
+	 *
+	 * 不使用代理
 	 */
 	NO,
 
 	/**
 	 * Create a JDK dynamic proxy implementing <i>all</i> interfaces exposed by
 	 * the class of the target object.
+	 *
+	 * 使用JDK代理
+	 *
 	 */
 	INTERFACES,
 
 	/**
 	 * Create a class-based proxy (uses CGLIB).
+	 *
+	 * 使用CGLIB代理
+	 *
 	 */
 	TARGET_CLASS
 

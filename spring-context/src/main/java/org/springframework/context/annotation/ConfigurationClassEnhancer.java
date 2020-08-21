@@ -93,8 +93,12 @@ class ConfigurationClassEnhancer {
 	 * Loads the specified class and generates a CGLIB subclass of it equipped with
 	 * container-aware callbacks capable of respecting scoping and other bean semantics.
 	 * @return the enhanced subclass
+	 *
+	 * 生成代理对象
+	 *
 	 */
 	public Class<?> enhance(Class<?> configClass, @Nullable ClassLoader classLoader) {
+		//判断目标类configClass是否实现了EnhancedConfiguration类
 		if (EnhancedConfiguration.class.isAssignableFrom(configClass)) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(String.format("Ignoring request to enhance %s as it has " +
@@ -106,6 +110,7 @@ class ConfigurationClassEnhancer {
 			}
 			return configClass;
 		}
+		//开始生成
 		Class<?> enhancedClass = createClass(newEnhancer(configClass, classLoader));
 		if (logger.isTraceEnabled()) {
 			logger.trace(String.format("Successfully enhanced %s; enhanced class name is: %s",
@@ -116,14 +121,21 @@ class ConfigurationClassEnhancer {
 
 	/**
 	 * Creates a new CGLIB {@link Enhancer} instance.
+	 *
+	 * 创建一个CGLIB Enhancer实例
+	 *
 	 */
 	private Enhancer newEnhancer(Class<?> configSuperClass, @Nullable ClassLoader classLoader) {
 		Enhancer enhancer = new Enhancer();
-		enhancer.setSuperclass(configSuperClass);
-		enhancer.setInterfaces(new Class<?>[] {EnhancedConfiguration.class});
-		enhancer.setUseFactory(false);
+		enhancer.setSuperclass(configSuperClass);  // 代理对象 extends 目标类
+		enhancer.setInterfaces(new Class<?>[] {EnhancedConfiguration.class});  //代理对象 implements EnhancedConfiguration
+		enhancer.setUseFactory(false);  //是否implement Factory
 		enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
 		enhancer.setStrategy(new BeanFactoryAwareGeneratorStrategy(classLoader));
+		//todo: CALLBACK_FILTER { new BeanMethodInterceptor(),
+		//						  new BeanFactoryAwareMethodInterceptor(),
+		//					      NoOp.INSTANCE
+		//						}  具体含义
 		enhancer.setCallbackFilter(CALLBACK_FILTER);
 		enhancer.setCallbackTypes(CALLBACK_FILTER.getCallbackTypes());
 		return enhancer;
@@ -132,6 +144,8 @@ class ConfigurationClassEnhancer {
 	/**
 	 * Uses enhancer to generate a subclass of superclass,
 	 * ensuring that callbacks are registered for the new subclass.
+	 *
+	 * 生成代理类：使用增强器生成超类的子类，
 	 */
 	private Class<?> createClass(Enhancer enhancer) {
 		Class<?> subclass = enhancer.createClass();
@@ -310,6 +324,9 @@ class ConfigurationClassEnhancer {
 		 * existence of this bean object.
 		 * @throws Throwable as a catch-all for any exception that may be thrown when invoking the
 		 * super implementation of the proxied method i.e., the actual {@code @Bean} method
+		 *
+		 * CGlib的代理回调 todo:没有详细分析
+		 *
 		 */
 		@Override
 		@Nullable
@@ -360,9 +377,10 @@ class ConfigurationClassEnhancer {
 									"these container lifecycle issues; see @Bean javadoc for complete details.",
 							beanMethod.getDeclaringClass().getSimpleName(), beanMethod.getName()));
 				}
+				//调用父类的方法  生成对象
 				return cglibMethodProxy.invokeSuper(enhancedConfigInstance, beanMethodArgs);
 			}
-
+			//调用自己的方法  先获取对象
 			return resolveBeanReference(beanMethod, beanMethodArgs, beanFactory, beanName);
 		}
 

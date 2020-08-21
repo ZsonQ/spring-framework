@@ -93,6 +93,9 @@ import org.springframework.util.Assert;
  */
 public class GenericApplicationContext extends AbstractApplicationContext implements BeanDefinitionRegistry {
 
+	/**
+	 * 对内部的一个BeanFactory的持有
+	 */
 	private final DefaultListableBeanFactory beanFactory;
 
 	@Nullable
@@ -104,6 +107,13 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 
 
 	/**
+	 *
+	 * 创建一个DefaultListableBeanFactory工厂bean
+	 *
+	 * DefaultListableBeanFactory extends BeanDefinitionRegistryPostProcessor
+	 *
+	 * 用来后面优先执行BeanDefinitionRegistryPostProcessor.invokeBeanFactoryPostProcessors()
+	 * {@link org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor}
 	 * Create a new GenericApplicationContext.
 	 * @see #registerBeanDefinition
 	 * @see #refresh

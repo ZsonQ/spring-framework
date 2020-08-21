@@ -139,6 +139,12 @@ import org.springframework.util.StringValueResolver;
  * @see #setResourceFactory
  * @see org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor
  * @see org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor
+ *
+ *
+ * @Resource注解的属性和方法注入的bean后置处理器
+ *
+ * 处理属性注入时添加了@Resource注解的属性以及方法
+ *
  */
 @SuppressWarnings("serial")
 public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBeanPostProcessor
@@ -292,10 +298,21 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		}
 	}
 
-
+	/**
+	 *
+	 * 查找添加了 @Resource 注解的属性和方法
+	 * 并封装成InjectionMetadata
+	 * 缓存到injectionMetadataCache中
+	 *
+	 * @param beanDefinition
+	 * @param beanType
+	 * @param beanName
+	 */
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
+		//调用父类的方法，查找所有的生命周期回调方法---初始化和销毁
 		super.postProcessMergedBeanDefinition(beanDefinition, beanType, beanName);
+		//查找 @Resource 注解的属性和方法 缓存到injectionMetadataCache中
 		InjectionMetadata metadata = findResourceMetadata(beanName, beanType, null);
 		metadata.checkConfigMembers(beanDefinition);
 	}
@@ -336,19 +353,35 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 	}
 
 
+	/**
+	 * 查找 @Resource 注解的属性和方法
+	 *
+	 * 静态static 属性和方法不能注入
+	 *
+	 * @param beanName
+	 * @param clazz
+	 * @param pvs
+	 * @return
+	 */
 	private InjectionMetadata findResourceMetadata(String beanName, final Class<?> clazz, @Nullable PropertyValues pvs) {
 		// Fall back to class name as cache key, for backwards compatibility with custom callers.
+		// 返回类名作为缓存key
 		String cacheKey = (StringUtils.hasLength(beanName) ? beanName : clazz.getName());
 		// Quick check on the concurrent map first, with minimal locking.
+		// 从injectionMetadataCache 缓存中获取
 		InjectionMetadata metadata = this.injectionMetadataCache.get(cacheKey);
+		// 是否需要添加或者刷新该类的InjectionMetadata
 		if (InjectionMetadata.needsRefresh(metadata, clazz)) {
 			synchronized (this.injectionMetadataCache) {
 				metadata = this.injectionMetadataCache.get(cacheKey);
-				if (InjectionMetadata.needsRefresh(metadata, clazz)) {
+				if (InjectionMetadata.needsRefresh(metadata, clazz)) {//双重检查机制
 					if (metadata != null) {
 						metadata.clear(pvs);
 					}
+					// 将需要注入的属性以及方法封装成InjectionMetadata
+					// 处理@Resource注解
 					metadata = buildResourceMetadata(clazz);
+					//添加到缓存中
 					this.injectionMetadataCache.put(cacheKey, metadata);
 				}
 			}
@@ -356,13 +389,23 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		return metadata;
 	}
 
+	/**
+	 * 查找 @Resource 注解的属性和方法
+	 *
+	 * 静态static 属性和方法不能注入
+	 *
+	 * @param clazz
+	 * @return
+	 */
 	private InjectionMetadata buildResourceMetadata(final Class<?> clazz) {
 		List<InjectionMetadata.InjectedElement> elements = new ArrayList<>();
 		Class<?> targetClass = clazz;
 
 		do {
+			// 保存该类的所有需要注入的属性和方法
 			final List<InjectionMetadata.InjectedElement> currElements = new ArrayList<>();
 
+			// 查找哪些属性需要被注入
 			ReflectionUtils.doWithLocalFields(targetClass, field -> {
 				if (webServiceRefClass != null && field.isAnnotationPresent(webServiceRefClass)) {
 					if (Modifier.isStatic(field.getModifiers())) {
@@ -386,6 +429,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 				}
 			});
 
+			// 查找哪些方法需要被注入
 			ReflectionUtils.doWithLocalMethods(targetClass, method -> {
 				Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
 				if (!BridgeMethodResolver.isVisibilityBridgeMethodPair(method, bridgedMethod)) {

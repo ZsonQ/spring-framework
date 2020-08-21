@@ -68,6 +68,10 @@ public class AnnotatedBeanDefinitionReader {
 	 * @see #setEnvironment(Environment)
 	 */
 	public AnnotatedBeanDefinitionReader(BeanDefinitionRegistry registry) {
+		//容器后续工作前置条件的初始化
+		//    1.保存容器AnnotationConfigApplicationContext实例
+		//    2.容器后续工作前置条件的初始化
+		//    3.注册1个beanFactory 和 注册5个BeanDefinition 一般jpaProcessor那个不会注册
 		this(registry, getOrCreateEnvironment(registry));
 	}
 
@@ -83,8 +87,16 @@ public class AnnotatedBeanDefinitionReader {
 	public AnnotatedBeanDefinitionReader(BeanDefinitionRegistry registry, Environment environment) {
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 		Assert.notNull(environment, "Environment must not be null");
+		//保存容器AnnotationConfigApplicationContext实例
 		this.registry = registry;
+		//容器后续工作前置条件的初始化
+		//		1.实例化BeanFactory {@link ConfigurableListableBeanFactory}（如果需要）
+		//		1.实例化容器环境类 {@link Environment} 对象（如果需要）
+		//		1.实例化文件扫描类 {@link ResourceLoader}（如果需要）
+		//		1.实例化类加载器 #deduceClassLoader（如果需要）
 		this.conditionEvaluator = new ConditionEvaluator(registry, environment, null);
+		//1.注册1个beanFactory --> DefaultListableBeanFactory
+		//2.注册5个BeanDefinition --> XXXProcessor  一般jpaProcessor那个不会注册
 		AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
 	}
 
@@ -130,6 +142,9 @@ public class AnnotatedBeanDefinitionReader {
 	 * component class more than once has no additional effect.
 	 * @param componentClasses one or more component classes,
 	 * e.g. {@link Configuration @Configuration} classes
+	 *
+	 * 循环注册一个或多个要处理的组件类。多个配置类
+	 *
 	 */
 	public void register(Class<?>... componentClasses) {
 		for (Class<?> componentClass : componentClasses) {
@@ -141,6 +156,8 @@ public class AnnotatedBeanDefinitionReader {
 	 * Register a bean from the given bean class, deriving its metadata from
 	 * class-declared annotations.
 	 * @param beanClass the class of the bean
+	 *
+	 * 根据Class注册一个BeanDefinition
 	 */
 	public void registerBean(Class<?> beanClass) {
 		doRegisterBean(beanClass, null, null, null);
@@ -210,21 +227,32 @@ public class AnnotatedBeanDefinitionReader {
 	 * @param definitionCustomizers one or more callbacks for customizing the
 	 * factory's {@link BeanDefinition}, e.g. setting a lazy-init or primary flag
 	 * @since 5.0
+	 *
+	 * 注册类的BeanDefinition元数据
+	 * 		Class -->BeanDefinition
+	 *
 	 */
 	<T> void doRegisterBean(Class<T> beanClass, @Nullable Supplier<T> instanceSupplier, @Nullable String name,
 			@Nullable Class<? extends Annotation>[] qualifiers, BeanDefinitionCustomizer... definitionCustomizers) {
 
+		// AnnotatedGenericBeanDefinition extends GenericBeanDefinition implements AnnotatedBeanDefinition
 		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(beanClass);
+		//判断时候处理注解@Conditional
 		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
 			return;
 		}
 
+		//填充BeanDefinition元数据和beanName
 		abd.setInstanceSupplier(instanceSupplier);
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
 		abd.setScope(scopeMetadata.getScopeName());
 		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
 
+		//开始处理BeanDefinition是否需要填充 @Lazy、@Primary、 @DependsOn、 @Role、 @Description
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
+		//这里感觉没有作用
+		//因为qualifiers传的是null
+		//而且 @Lazy、@Primary注解都在上个方法处理了
 		if (qualifiers != null) {
 			for (Class<? extends Annotation> qualifier : qualifiers) {
 				if (Primary.class == qualifier) {
@@ -234,16 +262,21 @@ public class AnnotatedBeanDefinitionReader {
 					abd.setLazyInit(true);
 				}
 				else {
+					//处理Qualifier
 					abd.addQualifier(new AutowireCandidateQualifier(qualifier));
 				}
 			}
 		}
+		//循环处理自定义的BeanDefinition
 		for (BeanDefinitionCustomizer customizer : definitionCustomizers) {
 			customizer.customize(abd);
 		}
 
+		//封装BeanDefinition
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
+		//是否代理BeanDefinition, 代理则返回代理对象
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+		//注册BeanDefinition
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
 	}
 
@@ -251,10 +284,15 @@ public class AnnotatedBeanDefinitionReader {
 	/**
 	 * Get the Environment from the given registry if possible, otherwise return a new
 	 * StandardEnvironment.
+	 *
+	 * 获取容器的环境属性
+	 *
 	 */
 	private static Environment getOrCreateEnvironment(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
+		// AnnotationConfigApplicationContext  implements EnvironmentCapable
 		if (registry instanceof EnvironmentCapable) {
+			//返回容器坏境
 			return ((EnvironmentCapable) registry).getEnvironment();
 		}
 		return new StandardEnvironment();

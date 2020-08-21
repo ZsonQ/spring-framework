@@ -52,6 +52,10 @@ public abstract class ScopedProxyUtils {
 	 * @return the scoped proxy definition
 	 * @see #getTargetBeanName(String)
 	 * @see #getOriginalBeanName(String)
+	 *
+	 *
+	 * 对BeanDefinition进行代理，返回代理类对象
+	 *
 	 */
 	public static BeanDefinitionHolder createScopedProxy(BeanDefinitionHolder definition,
 			BeanDefinitionRegistry registry, boolean proxyTargetClass) {

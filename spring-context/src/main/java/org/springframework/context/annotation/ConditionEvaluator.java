@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,9 +52,16 @@ class ConditionEvaluator {
 
 	/**
 	 * Create a new {@link ConditionEvaluator} instance.
+	 *
+	 * 容器后续工作前置条件的初始化
+	 * 		1.实例化BeanFactory {@link ConfigurableListableBeanFactory}（如果需要）
+	 * 		1.实例化容器环境类 {@link Environment} 对象（如果需要）
+	 * 		1.实例化文件扫描类 {@link ResourceLoader}（如果需要）
+	 * 		1.实例化类加载器 #deduceClassLoader（如果需要）
+	 *
 	 */
 	public ConditionEvaluator(@Nullable BeanDefinitionRegistry registry,
-			@Nullable Environment environment, @Nullable ResourceLoader resourceLoader) {
+							  @Nullable Environment environment, @Nullable ResourceLoader resourceLoader) {
 
 		this.context = new ConditionContextImpl(registry, environment, resourceLoader);
 	}
@@ -64,6 +71,7 @@ class ConditionEvaluator {
 	 * Determine if an item should be skipped based on {@code @Conditional} annotations.
 	 * The {@link ConfigurationPhase} will be deduced from the type of item (i.e. a
 	 * {@code @Configuration} class will be {@link ConfigurationPhase#PARSE_CONFIGURATION})
+	 *
 	 * @param metadata the meta data
 	 * @return if the item should be skipped
 	 */
@@ -74,8 +82,12 @@ class ConditionEvaluator {
 	/**
 	 * Determine if an item should be skipped based on {@code @Conditional} annotations.
 	 * @param metadata the meta data
-	 * @param phase the phase of the call
+	 * @param phase    the phase of the call
 	 * @return if the item should be skipped
+	 *
+	 * 处理注解@Conditional
+	 * 解析注解@Conditional注释确定是否应该跳过某项。
+	 *
 	 */
 	public boolean shouldSkip(@Nullable AnnotatedTypeMetadata metadata, @Nullable ConfigurationPhase phase) {
 		if (metadata == null || !metadata.isAnnotated(Conditional.class.getName())) {
@@ -90,6 +102,7 @@ class ConditionEvaluator {
 			return shouldSkip(metadata, ConfigurationPhase.REGISTER_BEAN);
 		}
 
+		//实例化Conditional的所有类
 		List<Condition> conditions = new ArrayList<>();
 		for (String[] conditionClasses : getConditionClasses(metadata)) {
 			for (String conditionClass : conditionClasses) {
@@ -145,20 +158,38 @@ class ConditionEvaluator {
 		private final ClassLoader classLoader;
 
 		public ConditionContextImpl(@Nullable BeanDefinitionRegistry registry,
-				@Nullable Environment environment, @Nullable ResourceLoader resourceLoader) {
+									@Nullable Environment environment, @Nullable ResourceLoader resourceLoader) {
 
 			this.registry = registry;
+			//获取内部的ConfigurableListableBeanFactory对象
 			this.beanFactory = deduceBeanFactory(registry);
+			// 再次获取或者创建默认的容器环境属性对象
 			this.environment = (environment != null ? environment : deduceEnvironment(registry));
+			// 获取或者创建默认的文件对象，用于以后扫描文件的实现类
 			this.resourceLoader = (resourceLoader != null ? resourceLoader : deduceResourceLoader(registry));
+			// 返回类加载器
 			this.classLoader = deduceClassLoader(resourceLoader, this.beanFactory);
 		}
 
+		/**
+		 * 返回内部BeanFactory对象 --》 ConfigurableListableBeanFactory
+		 *
+		 *
+		 * @param source
+		 * @return
+		 */
 		@Nullable
 		private ConfigurableListableBeanFactory deduceBeanFactory(@Nullable BeanDefinitionRegistry source) {
 			if (source instanceof ConfigurableListableBeanFactory) {
 				return (ConfigurableListableBeanFactory) source;
 			}
+			/**
+			 * source是AnnotationConfigApplicationContext、
+			 * AnnotationConfigApplicationContext extends ConfigurableApplicationContext
+			 *
+			 * 获取{@linkorg.springframework.context.annotation.AnnotationConfigApplicationContext}的父类 {@link org.springframework.context.support.GenericApplicationContext}
+			 * 的getBeanFactory()获取ConfigurableListableBeanFactory bean工厂对象
+			 */
 			if (source instanceof ConfigurableApplicationContext) {
 				return (((ConfigurableApplicationContext) source).getBeanFactory());
 			}
@@ -179,9 +210,18 @@ class ConditionEvaluator {
 			return new DefaultResourceLoader();
 		}
 
+		/**
+		 * 1.resourceLoader.getClassLoader(); 如果有
+		 * 2.beanFactory.getBeanClassLoader(); 如果有
+		 * 3.ClassUtils.getDefaultClassLoader() 使用的默认类加载器:通常是线程上下文类加载器
+		 *
+		 * @param resourceLoader
+		 * @param beanFactory
+		 * @return
+		 */
 		@Nullable
 		private ClassLoader deduceClassLoader(@Nullable ResourceLoader resourceLoader,
-				@Nullable ConfigurableListableBeanFactory beanFactory) {
+											  @Nullable ConfigurableListableBeanFactory beanFactory) {
 
 			if (resourceLoader != null) {
 				ClassLoader classLoader = resourceLoader.getClassLoader();

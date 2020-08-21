@@ -36,6 +36,14 @@ import org.springframework.util.ObjectUtils;
  * @see #setParentName
  * @see RootBeanDefinition
  * @see ChildBeanDefinition
+ *
+ * GenericBeanDefinition的作用：
+ * 		1.可作为普通的db
+ * 		2.可作为一个父db
+ * 		3.可作为一个子db
+ * 	但是GenericBeanDefinition不能完全替代RootBeanDefinition
+ * 		当需要合并mergn db时，只能返回RootBeanDefinition
+ * 	但是可以完全替代ChildBeanDefinition
  */
 @SuppressWarnings("serial")
 public class GenericBeanDefinition extends AbstractBeanDefinition {

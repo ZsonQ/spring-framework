@@ -63,7 +63,10 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 */
 	public AnnotationConfigApplicationContext() {
+		//实例化读取器
 		this.reader = new AnnotatedBeanDefinitionReader(this);
+		//实例化扫描器
+		//spring 提供api用来动态扫描注解用的
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 
@@ -84,8 +87,11 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * {@link Configuration @Configuration} classes
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
+		//调用构造方法 实例化 reader读取器 和 scanner扫描器
 		this();
+		// 扫描配置类并解析成db
 		register(componentClasses);
+		// 扫描并解析其他类
 		refresh();
 	}
 

@@ -33,11 +33,17 @@ import org.springframework.util.StringUtils;
  * @author Rob Harrop
  * @author Juergen Hoeller
  * @since 2.0
+ *
+ * 对AttributeAccessor接口API的实现
+ *
  */
 @SuppressWarnings("serial")
 public abstract class AttributeAccessorSupport implements AttributeAccessor, Serializable {
 
-	/** Map with String keys and Object values. */
+	/**
+	 * Map with String keys and Object values.
+	 * attributes保存BeanDefinition的所有数据属性
+	 */
 	private final Map<String, Object> attributes = new LinkedHashMap<>();
 
 
@@ -81,6 +87,9 @@ public abstract class AttributeAccessorSupport implements AttributeAccessor, Ser
 	/**
 	 * Copy the attributes from the supplied AttributeAccessor to this accessor.
 	 * @param source the AttributeAccessor to copy from
+	 *
+	 * 设置元数据开放访问
+	 * 将属性从提供的AttributeAccessor复制到此访问器
 	 */
 	protected void copyAttributesFrom(AttributeAccessor source) {
 		Assert.notNull(source, "Source must not be null");

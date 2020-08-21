@@ -22,6 +22,10 @@ import org.springframework.core.AttributeAccessor;
 import org.springframework.lang.Nullable;
 
 /**
+ *
+ * 类的定义信息
+ * BeanDefinition是对bean实例的描述
+ *
  * A BeanDefinition describes a bean instance, which has property values,
  * constructor argument values, and further information supplied by
  * concrete implementations.
@@ -43,6 +47,9 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * Scope identifier for the standard singleton scope: "singleton".
 	 * <p>Note that extended bean factories might support further scopes.
 	 * @see #setScope
+	 *
+	 * 单例常量
+	 *
 	 */
 	String SCOPE_SINGLETON = ConfigurableBeanFactory.SCOPE_SINGLETON;
 
@@ -50,6 +57,9 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * Scope identifier for the standard prototype scope: "prototype".
 	 * <p>Note that extended bean factories might support further scopes.
 	 * @see #setScope
+	 *
+	 * 原型常量
+	 *
 	 */
 	String SCOPE_PROTOTYPE = ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
@@ -57,6 +67,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * Role hint indicating that a {@code BeanDefinition} is a major part
 	 * of the application. Typically corresponds to a user-defined bean.
+	 *
+	 *
 	 */
 	int ROLE_APPLICATION = 0;
 
@@ -84,11 +96,17 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Set the name of the parent definition of this bean definition, if any.
+	 *
+	 * 设置一个父定义的名称 例如：RootBeanDefinition、GenericBeanDefinition类型的实例
+	 *
 	 */
 	void setParentName(@Nullable String parentName);
 
 	/**
 	 * Return the name of the parent definition of this bean definition, if any.
+	 *
+	 * 获取一个父定义的实例名
+	 *
 	 */
 	@Nullable
 	String getParentName();
@@ -100,6 +118,12 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * @see #setParentName
 	 * @see #setFactoryBeanName
 	 * @see #setFactoryMethodName
+	 *
+	 * 指定bean的类名
+	 *
+	 * 可以在bean工厂后处理期间修改类名，
+	 * 通常用解析后的类名替换原来的类名
+	 *
 	 */
 	void setBeanClassName(@Nullable String beanClassName);
 
@@ -114,6 +138,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * @see #getParentName()
 	 * @see #getFactoryBeanName()
 	 * @see #getFactoryMethodName()
+	 *
+	 * 获取bean的类名
 	 */
 	@Nullable
 	String getBeanClassName();
@@ -122,12 +148,17 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * Override the target scope of this bean, specifying a new scope name.
 	 * @see #SCOPE_SINGLETON
 	 * @see #SCOPE_PROTOTYPE
+	 *
+	 * 设置bean的作用域
 	 */
 	void setScope(@Nullable String scope);
 
 	/**
 	 * Return the name of the current target scope for this bean,
 	 * or {@code null} if not known yet.
+	 *
+	 * 获取类的作用域
+	 *
 	 */
 	@Nullable
 	String getScope();
@@ -136,23 +167,35 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * Set whether this bean should be lazily initialized.
 	 * <p>If {@code false}, the bean will get instantiated on startup by bean
 	 * factories that perform eager initialization of singletons.
+	 *
+	 * 设置bean为lazily懒加载
+	 *
 	 */
 	void setLazyInit(boolean lazyInit);
 
 	/**
 	 * Return whether this bean should be lazily initialized, i.e. not
 	 * eagerly instantiated on startup. Only applicable to a singleton bean.
+	 *
+	 * 返回bean是否是懒加载
+	 *
 	 */
 	boolean isLazyInit();
 
 	/**
 	 * Set the names of the beans that this bean depends on being initialized.
 	 * The bean factory will guarantee that these beans get initialized first.
+	 *
+	 * 设置bean所依赖的bean优先被初始化
+	 *
 	 */
 	void setDependsOn(@Nullable String... dependsOn);
 
 	/**
 	 * Return the bean names that this bean depends on.
+	 *
+	 * 返回bean所依赖的bean优先被初始化
+	 *
 	 */
 	@Nullable
 	String[] getDependsOn();
@@ -162,12 +205,22 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * <p>Note that this flag is designed to only affect type-based autowiring.
 	 * It does not affect explicit references by name, which will get resolved even
 	 * if the specified bean is not marked as an autowire candidate. As a consequence,
-	 * autowiring by name will nevertheless inject a bean if the name matches.
+	 * autowiring by name will nevertheless inject a bean if the name matches.、
+	 *
+	 * 当存在多个type或者name时
+	 *
+	 * 设置该bean不是首选被自动注入的bean
+	 *
 	 */
 	void setAutowireCandidate(boolean autowireCandidate);
 
 	/**
 	 * Return whether this bean is a candidate for getting autowired into some other bean.
+	 *
+	 * 当存在多个type或者name时
+	 *
+	 * 返回该bean是不是首选被自动注入的bean
+	 *
 	 */
 	boolean isAutowireCandidate();
 
@@ -175,11 +228,21 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * Set whether this bean is a primary autowire candidate.
 	 * <p>If this value is {@code true} for exactly one bean among multiple
 	 * matching candidates, it will serve as a tie-breaker.
+	 *
+	 * 当存在多个type或者name时
+	 *
+	 * 设置bean为优先注入的bean
+	 *
 	 */
 	void setPrimary(boolean primary);
 
 	/**
 	 * Return whether this bean is a primary autowire candidate.
+	 *
+	 * 当存在多个type或者name时
+	 *
+	 * 返回bean是不是为优先注入的bean
+	 *
 	 */
 	boolean isPrimary();
 
@@ -187,11 +250,16 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * Specify the factory bean to use, if any.
 	 * This the name of the bean to call the specified factory method on.
 	 * @see #setFactoryMethodName
+	 *
+	 * 指定要使用的FactoryBean名称
+	 *
 	 */
 	void setFactoryBeanName(@Nullable String factoryBeanName);
 
 	/**
 	 * Return the factory bean name, if any.
+	 *
+	 * 返回指定的FactoryBean名称
 	 */
 	@Nullable
 	String getFactoryBeanName();
@@ -203,11 +271,17 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * or otherwise as a static method on the local bean class.
 	 * @see #setFactoryBeanName
 	 * @see #setBeanClassName
+	 *
+	 * 指定FactoryBean返回bean的方法名
+	 *
 	 */
 	void setFactoryMethodName(@Nullable String factoryMethodName);
 
 	/**
 	 * Return a factory method, if any.
+	 *
+	 * 返回指定FactoryBean返回bean的方法名
+	 *
 	 */
 	@Nullable
 	String getFactoryMethodName();
@@ -216,6 +290,9 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * Return the constructor argument values for this bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
 	 * @return the ConstructorArgumentValues object (never {@code null})
+	 *
+	 *
+	 *
 	 */
 	ConstructorArgumentValues getConstructorArgumentValues();
 
@@ -231,6 +308,9 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * Return the property values to be applied to a new instance of the bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
 	 * @return the MutablePropertyValues object (never {@code null})
+	 *
+	 * 返回bean实例的属性值
+	 *
 	 */
 	MutablePropertyValues getPropertyValues();
 

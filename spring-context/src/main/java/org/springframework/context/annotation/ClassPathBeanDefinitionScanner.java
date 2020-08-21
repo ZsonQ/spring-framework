@@ -155,6 +155,9 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * definition profile metadata
 	 * @param resourceLoader the {@link ResourceLoader} to use
 	 * @since 4.3.6
+	 *
+	 *
+	 *
 	 */
 	public ClassPathBeanDefinitionScanner(BeanDefinitionRegistry registry, boolean useDefaultFilters,
 			Environment environment, @Nullable ResourceLoader resourceLoader) {
@@ -163,6 +166,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 		this.registry = registry;
 
 		if (useDefaultFilters) {
+			//注册默认过滤器 includeFilters
 			registerDefaultFilters();
 		}
 		setEnvironment(environment);

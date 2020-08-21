@@ -166,6 +166,7 @@ public abstract class BeanDefinitionReaderUtils {
 		registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
 
 		// Register aliases for bean name, if any.
+		// 注册bean名称的别名(如果有的话)
 		String[] aliases = definitionHolder.getAliases();
 		if (aliases != null) {
 			for (String alias : aliases) {

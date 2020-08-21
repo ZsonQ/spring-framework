@@ -50,6 +50,12 @@ import org.springframework.util.Assert;
  * @author Juergen Hoeller
  * @see GenericBeanDefinition
  * @see ChildBeanDefinition
+ *
+ * RootBeanDefinition的作用：
+ * 		1.可作为模板db(父BeanDefinition)
+ * 	    2.可作为一个普通的db
+ * 	    3.不能作为子db
+ *      	原因： 会抛出异常
  */
 @SuppressWarnings("serial")
 public class RootBeanDefinition extends AbstractBeanDefinition {

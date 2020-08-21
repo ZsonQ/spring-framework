@@ -67,6 +67,9 @@ package org.springframework.core.env;
  * @see org.springframework.context.ConfigurableApplicationContext#getEnvironment
  * @see org.springframework.context.ConfigurableApplicationContext#setEnvironment
  * @see org.springframework.context.support.AbstractApplicationContext#createEnvironment
+ *
+ * 表示当前应用程序在其中运行的环境的接口。
+ *
  */
 public interface Environment extends PropertyResolver {
 

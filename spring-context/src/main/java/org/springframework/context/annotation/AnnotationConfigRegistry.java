@@ -22,6 +22,8 @@ package org.springframework.context.annotation;
  *
  * @author Juergen Hoeller
  * @since 4.1
+ *
+ * 注册Configuration和扫描包
  */
 public interface AnnotationConfigRegistry {
 
@@ -29,13 +31,20 @@ public interface AnnotationConfigRegistry {
 	 * Register one or more component classes to be processed.
 	 * <p>Calls to {@code register} are idempotent; adding the same
 	 * component class more than once has no additional effect.
+	 *
 	 * @param componentClasses one or more component classes,
-	 * e.g. {@link Configuration @Configuration} classes
+	 *  e.g. {@link Configuration @Configuration} classes
+	 *
+	 *  注册一个或多个需要处理的组件类
+	 *   例如: {@link Configuration @Configuration}
 	 */
 	void register(Class<?>... componentClasses);
 
 	/**
+	 * 扫描指定的包
+	 * <p>
 	 * Perform a scan within the specified base packages.
+	 *
 	 * @param basePackages the packages to scan for component classes
 	 */
 	void scan(String... basePackages);

@@ -179,6 +179,9 @@ public abstract class ClassUtils {
 	 * ClassLoader isn't accessible)
 	 * @see Thread#getContextClassLoader()
 	 * @see ClassLoader#getSystemClassLoader()
+	 *
+	 * 返回要使用的默认类加载器:通常是线程上下文类加载器(如果可用);
+	 *
 	 */
 	@Nullable
 	public static ClassLoader getDefaultClassLoader() {

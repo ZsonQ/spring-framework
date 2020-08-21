@@ -38,6 +38,10 @@ import org.springframework.util.ResourceUtils;
  * @see org.springframework.core.io.support.ResourcePatternResolver
  * @see org.springframework.context.ApplicationContext
  * @see org.springframework.context.ResourceLoaderAware
+ *
+ * 加载资源的策略接口(例如..类路径或文件系统
+ *
+ * 加载配置文件接口
  */
 public interface ResourceLoader {
 

@@ -74,6 +74,10 @@ public interface SmartFactoryBean<T> extends FactoryBean<T> {
 	 * <p>The default implementation returns {@code false}.
 	 * @return whether eager initialization applies
 	 * @see org.springframework.beans.factory.config.ConfigurableListableBeanFactory#preInstantiateSingletons()
+	 *
+	 * 是否需要急切初始化bean工厂和bean
+	 *
+	 *
 	 */
 	default boolean isEagerInit() {
 		return false;

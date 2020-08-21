@@ -53,6 +53,11 @@ import org.springframework.util.StringUtils;
  * @see GenericBeanDefinition
  * @see RootBeanDefinition
  * @see ChildBeanDefinition
+ *
+ *
+ * 抽象的BeanDefinition的基类
+ * 定义了一些常量，子类创建时能快速初始化
+ *
  */
 @SuppressWarnings("serial")
 public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccessor
@@ -61,30 +66,45 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	/**
 	 * Constant for the default scope name: {@code ""}, equivalent to singleton
 	 * status unless overridden from a parent bean definition (if applicable).
+	 *
+	 * 默认的作用域：单例
+	 *
 	 */
 	public static final String SCOPE_DEFAULT = "";
 
 	/**
 	 * Constant that indicates no external autowiring at all.
 	 * @see #setAutowireMode
+	 *
+	 * 自动注入模型：默认值：不注入
+	 *
 	 */
 	public static final int AUTOWIRE_NO = AutowireCapableBeanFactory.AUTOWIRE_NO;
 
 	/**
 	 * Constant that indicates autowiring bean properties by name.
 	 * @see #setAutowireMode
+	 *
+	 * 自动注入模型：通过name注入
+	 *
 	 */
 	public static final int AUTOWIRE_BY_NAME = AutowireCapableBeanFactory.AUTOWIRE_BY_NAME;
 
 	/**
 	 * Constant that indicates autowiring bean properties by type.
 	 * @see #setAutowireMode
+	 *
+	 * 自动注入模型：通过type注入
+	 *
 	 */
 	public static final int AUTOWIRE_BY_TYPE = AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE;
 
 	/**
 	 * Constant that indicates autowiring a constructor.
 	 * @see #setAutowireMode
+	 *
+	 * 自动注入模型：通过构造器注入
+	 *
 	 */
 	public static final int AUTOWIRE_CONSTRUCTOR = AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR;
 
@@ -163,8 +183,12 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	@Nullable
 	private Supplier<?> instanceSupplier;
 
+
+	//允许访问非公有的构造方法==反射时
 	private boolean nonPublicAccessAllowed = true;
 
+	// 设置Spring采用的时宽松的构造模式还是严格的构造模式
+	// 默认 宽松模式
 	private boolean lenientConstructorResolution = true;
 
 	@Nullable
@@ -494,6 +518,9 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * rather just serving as parent for concrete child bean definitions.
 	 * <p>Default is "false". Specify true to tell the bean factory to not try to
 	 * instantiate that particular bean in any case.
+	 *
+	 * 将此BeanDefinition设置为模板类
+	 *
 	 */
 	public void setAbstract(boolean abstractFlag) {
 		this.abstractFlag = abstractFlag;
@@ -502,6 +529,9 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	/**
 	 * Return whether this bean is "abstract", i.e. not meant to be instantiated
 	 * itself but rather just serving as parent for concrete child bean definitions.
+	 *
+	 * 返回此BeanDefinition是不是为模板类
+	 *
 	 */
 	@Override
 	public boolean isAbstract() {
@@ -756,6 +786,9 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 
 	/**
 	 * Return whether to resolve constructors in lenient mode or in strict mode.
+	 *
+	 * 返回Spring采用的时宽松的构造模式还是严格的构造模式
+	 *
 	 */
 	public boolean isLenientConstructorResolution() {
 		return this.lenientConstructorResolution;
@@ -822,6 +855,8 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 
 	/**
 	 * Return if there are constructor argument values defined for this bean.
+	 *
+	 * 返回这个构造方法实例化bean所需要的参数是否为null
 	 */
 	@Override
 	public boolean hasConstructorArgumentValues() {

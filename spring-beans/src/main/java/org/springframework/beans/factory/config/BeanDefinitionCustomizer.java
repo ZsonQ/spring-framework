@@ -23,12 +23,18 @@ package org.springframework.beans.factory.config;
  * @author Juergen Hoeller
  * @since 5.0
  * @see org.springframework.beans.factory.support.BeanDefinitionBuilder#applyCustomizers
+ *
+ * 提供自定义的BeanDefinition类型
+ *
  */
 @FunctionalInterface
 public interface BeanDefinitionCustomizer {
 
 	/**
 	 * Customize the given bean definition.
+	 *
+	 * 自定义的BeanDefinition类型
+	 *
 	 */
 	void customize(BeanDefinition bd);
 
